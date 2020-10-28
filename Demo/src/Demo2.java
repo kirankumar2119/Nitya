@@ -32,7 +32,6 @@ import java.util.Scanner;
 public class Demo2 {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		System.out.println("Provide the folder path");
 		try (Scanner sc = new Scanner(System.in);) {
 			File fileObj = new File(sc.nextLine());
@@ -42,18 +41,7 @@ public class Demo2 {
 				Map<String, Integer> result = fetchMonths();
 				// List of all files and directories
 				File filesList[] = fileObj.listFiles();
-				for (File file : filesList) {
-					// filtering only files
-					if (file.isFile()) {
-						Date date = new Date(file.lastModified());
-						Calendar cal = Calendar.getInstance();
-						cal.setTime(date);
-						String month = new SimpleDateFormat("MMMM").format(cal.getTime());
-						int value = result.get(month);
-						result.replace(month, ++value);
-
-					}
-				}
+				findFileRecursive(filesList, result);
 				for (Map.Entry<String, Integer> res : result.entrySet()) {
 					System.out.println(res.getKey() + "-" + res.getValue());
 				}
@@ -77,6 +65,23 @@ public class Demo2 {
 			result.put(month, 0);
 		}
 		return result;
+	}
+
+	private static void findFileRecursive(File[] arr, Map<String, Integer> result) {
+		// for-each loop for main directory files
+		for (File file : arr) {
+			if (file.isFile()) {
+				Date date = new Date(file.lastModified());
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(date);
+				String month = new SimpleDateFormat("MMMM").format(cal.getTime());
+				int value = result.get(month);
+				result.replace(month, ++value);
+			} else if (file.isDirectory()) {
+				// recursion for sub-directories
+				findFileRecursive(file.listFiles(), result);
+			}
+		}
 	}
 
 }
